@@ -1,0 +1,3 @@
+[submodule "ziglings"]
+	path = ziglings
+	url = https://codeberg.org/ziglings/exercises.git
