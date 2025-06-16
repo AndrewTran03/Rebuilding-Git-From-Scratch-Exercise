@@ -100,7 +100,7 @@ fn thread_pi(pi: *f64, begin: u64, end: u64, sign: Operation) !void {
     while (n < end) : (n += 4) {
         local_sum += multiplier * 4 / @as(f64, @floatFromInt(n));
     }
-    pi.* = local_sum;
+    pi.* = local_sum; // ERROR: Still "4.47" not "3.14" as expected
 }
 // If you wish, you can increase the number of loop passes, which
 // improves the number of digits.
