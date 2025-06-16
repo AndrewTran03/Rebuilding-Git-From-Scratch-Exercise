@@ -83,7 +83,7 @@ fn sub(a: f16, b: f16) f16 {
 // an error that you need
 // to correct.
 test "sub" {
-    try testing.expect(sub(10, 5) == 6);
+    try testing.expect(sub(10, 5) == 5);
 
     try testing.expect(sub(3, 1.5) == 1.5);
 }
