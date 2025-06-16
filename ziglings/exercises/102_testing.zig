@@ -108,5 +108,5 @@ test "divide" {
     // Now we test if the function returns an error
     // if we pass a zero as denominator.
     // But which error needs to be tested?
-    try testing.expectError(error.???, divide(15, 0));
+    try testing.expectError(error.DivisionByZero, divide(15, 0));
 }
