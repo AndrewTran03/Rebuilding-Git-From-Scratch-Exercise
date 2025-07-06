@@ -1,14 +1,13 @@
 
-all:
-	make run
+all: run
 
-compile:
+build:
 	zig build
 
-run: compile
+run: build
 	zig build run
 
-test: compile
+test: build
 	zig build test
 
 clean:
