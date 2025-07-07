@@ -1,5 +1,8 @@
 
-all: run
+all: format run
+
+format:
+	zig fmt src
 
 build:
 	zig build
