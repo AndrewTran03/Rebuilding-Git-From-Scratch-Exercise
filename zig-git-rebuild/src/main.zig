@@ -46,6 +46,7 @@ pub fn main() !void {
     }
 
     // Reference: https://ziggit.dev/t/how-to-properly-read-from-stdin/5218
+    // Simple REPL loop to read Git commands from stdin
     const stdin = std.io.getStdIn().reader();
     while (true) {
         try stdout.print("> ", .{});
