@@ -1,7 +1,11 @@
 //! By convention, main.zig is where your main function lives in the case that
 //! you are building an executable. If you are making a library, the convention
 //! is to delete this file and start with root.zig instead.
-const test_submodule = @import("test-submodule/math.zig");
+const TestSubmodule = @import("test-submodule/math.zig");
+const SharedTypes = @import("shared_types_lib");
+const String = SharedTypes.String;
+const GitCommit = @import("git/commit.zig");
+const GitBranch = @import("git/branch.zig");
 
 pub fn main() !void {
     // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
@@ -14,10 +18,30 @@ pub fn main() !void {
     var bw = std.io.bufferedWriter(stdout_file);
     const stdout = bw.writer();
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+    // try stdout.print("Run `zig build test` to run the tests.\n", .{});
 
-    const subtract_result = test_submodule.subtract(10, 5);
-    try stdout.print("Subtract result: {d}\n", .{subtract_result});
+    // const subtract_result = test_submodule.subtract(10, 5);
+    // try stdout.print("Subtract result: {d}\n", .{subtract_result});
+
+    const git_commit_id = GitBranch.GenerateGitCommitID();
+    try stdout.print("Generated Git Commit ID: {s}\n", .{git_commit_id});
+
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit(); // Ensure we deinitialize the arena to avoid memory leaks
+
+    const arena_allocator = arena.allocator();
+    const GitCommitType = GitCommit.GitCommitList(String);
+    var commit_list = GitCommitType.new(arena_allocator);
+    defer commit_list.delete(); // Ensure we deinitialize the list to avoid memory leaks
+
+    // Test adding commits to the list
+    try commit_list.add("Initial commit");
+    try commit_list.add("Added README");
+    try commit_list.add("Implemented feature X");
+
+    for (commit_list.list.items, 0..) |value, num_id| {
+        try stdout.print("Commit {d}: {s}\n", .{num_id, value});
+    }
 
     try bw.flush(); // Don't forget to flush!
 }
