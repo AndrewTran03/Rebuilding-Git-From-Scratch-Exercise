@@ -18,6 +18,7 @@ pub fn main() !void {
     // var bw = std.io.bufferedWriter(stdout_file);
     // const stdout = bw.writer();
     const stdout = std.io.getStdOut().writer();
+    const stderr = std.io.getStdErr().writer();
 
     // try stdout.print("Run `zig build test` to run the tests.\n", .{});
 
@@ -49,7 +50,18 @@ pub fn main() !void {
     while (true) {
         try stdout.print("> ", .{});
         var buffered_input: [1024]u8 = undefined;
-        const git_command_input = try stdin.readUntilDelimiter(&buffered_input, '\n');
+        const git_command_input = stdin.readUntilDelimiter(&buffered_input, '\n') catch |err| {
+            switch (err) {
+                error.EndOfStream => {
+                    try stderr.print("\n[ERROR] End of input stream. Exiting.\n", .{});
+                    break;
+                },
+                else => {
+                    try stderr.print("\n[ERROR] Failed to read input: {}\n", .{err});
+                    return err;
+                },
+            }
+        };
         try stdout.print("You entered: '{s}'\n", .{git_command_input});
         
         // If the user just pressed enter, we can skip processing that line of input
