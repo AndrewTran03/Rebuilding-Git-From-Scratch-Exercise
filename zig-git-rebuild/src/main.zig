@@ -14,9 +14,10 @@ pub fn main() !void {
     // stdout is for the actual output of your application, for example if you
     // are implementing gzip, then only the compressed bytes should be sent to
     // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+    // const stdout_file = std.io.getStdOut().writer();
+    // var bw = std.io.bufferedWriter(stdout_file);
+    // const stdout = bw.writer();
+    const stdout = std.io.getStdOut().writer();
 
     // try stdout.print("Run `zig build test` to run the tests.\n", .{});
 
@@ -43,7 +44,36 @@ pub fn main() !void {
         try stdout.print("Commit {d}: {s}\n", .{num_id, value});
     }
 
-    try bw.flush(); // Don't forget to flush!
+    // Reference: https://ziggit.dev/t/how-to-properly-read-from-stdin/5218
+    const stdin = std.io.getStdIn().reader();
+    while (true) {
+        try stdout.print("> ", .{});
+        var buffered_input: [1024]u8 = undefined;
+        const git_command = try stdin.readUntilDelimiter(&buffered_input, '\n');
+        try stdout.print("You entered: '{s}'\n", .{git_command});
+        
+        // If the user just pressed enter, we can skip processing that line of input
+        if (git_command.len == 0) {
+            continue;
+        }
+
+        const trimmed_git_command_newline = std.mem.trim(u8, git_command, "\n");
+        const git_command_lower_case_res = try arena_allocator.alloc(u8, trimmed_git_command_newline.len);
+        defer arena_allocator.free(git_command_lower_case_res);
+        @memset(git_command_lower_case_res, 0);
+
+        _ = std.ascii.lowerString(git_command_lower_case_res, trimmed_git_command_newline);
+        
+        // Exiting REPL Loop: 'q' or 'quit' case
+        if (std.mem.eql(u8, git_command_lower_case_res, "q") or
+            std.mem.eql(u8, git_command_lower_case_res, "quit")) {
+            // If the user entered 'q', 'quit', or 'exit', we can exit the loop
+            try stdout.print("Thank you for using this 'Git' replication program. Exiting now...\n", .{});
+            break;
+        }
+    }
+
+    // try bw.flush(); // Don't forget to flush!
 }
 
 test "simple test" {
