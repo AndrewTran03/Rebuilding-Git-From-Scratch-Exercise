@@ -49,20 +49,20 @@ pub fn main() !void {
     while (true) {
         try stdout.print("> ", .{});
         var buffered_input: [1024]u8 = undefined;
-        const git_command = try stdin.readUntilDelimiter(&buffered_input, '\n');
-        try stdout.print("You entered: '{s}'\n", .{git_command});
+        const git_command_input = try stdin.readUntilDelimiter(&buffered_input, '\n');
+        try stdout.print("You entered: '{s}'\n", .{git_command_input});
         
         // If the user just pressed enter, we can skip processing that line of input
-        if (git_command.len == 0) {
+        if (git_command_input.len == 0) {
             continue;
         }
 
-        const trimmed_git_command_newline = std.mem.trim(u8, git_command, "\n");
-        const git_command_lower_case_res = try arena_allocator.alloc(u8, trimmed_git_command_newline.len);
+        const trimmed_git_command_input_newline = std.mem.trim(u8, git_command_input, "\n");
+        const git_command_lower_case_res = try arena_allocator.alloc(u8, trimmed_git_command_input_newline.len);
         defer arena_allocator.free(git_command_lower_case_res);
         @memset(git_command_lower_case_res, 0);
 
-        _ = std.ascii.lowerString(git_command_lower_case_res, trimmed_git_command_newline);
+        _ = std.ascii.lowerString(git_command_lower_case_res, trimmed_git_command_input_newline);
         
         // Exiting REPL Loop: 'q' or 'quit' case
         if (std.mem.eql(u8, git_command_lower_case_res, "q") or
