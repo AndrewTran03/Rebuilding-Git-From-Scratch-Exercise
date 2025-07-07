@@ -31,15 +31,15 @@ pub fn main() !void {
 
     const arena_allocator = arena.allocator();
     const GitCommitType = GitCommit.GitCommitList(String);
-    var commit_list = GitCommitType.new(arena_allocator);
-    defer commit_list.delete(); // Ensure we deinitialize the list to avoid memory leaks
+    var commit_log = GitCommitType.new(arena_allocator);
+    defer commit_log.delete(); // Ensure we deinitialize the list to avoid memory leaks
 
     // Test adding commits to the list
-    try commit_list.add("Initial commit");
-    try commit_list.add("Added README");
-    try commit_list.add("Implemented feature X");
+    try commit_log.add("Initial commit");
+    try commit_log.add("Added README");
+    try commit_log.add("Implemented feature X");
 
-    for (commit_list.list.items, 0..) |value, num_id| {
+    for (commit_log.list.items, 0..) |value, num_id| {
         try stdout.print("Commit {d}: {s}\n", .{num_id, value});
     }
 
